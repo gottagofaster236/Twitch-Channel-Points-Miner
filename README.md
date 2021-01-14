@@ -8,7 +8,8 @@ and it will follow raids (_+250 points_).
 To run it, you first have to:
 
 1) [Download Python](https://www.python.org/downloads/).
-2) Install the dependencies. Run this command in the command line:<br>
+2) Install the dependencies. Run these two commands in the command line:<br>
+`cd C:/path/to/directory/with/program/`<br>
 `pip3 install -r requirements.txt`<br>
 
 
