@@ -1,4 +1,8 @@
 # Twitch Channel Points Miner
+
+# Note
+### I'm not actively developing this repo. You can use the enhanced fork: https://github.com/Tkd-Alex/Twitch-Channel-Points-Miner-v2
+
 A simple script that will watch a stream for you and earn the channel points.
 
 It can wait for a streamer to go live (+_450 points_ when the stream starts),
