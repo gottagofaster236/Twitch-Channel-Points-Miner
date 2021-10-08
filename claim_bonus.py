@@ -1,6 +1,5 @@
-import requests
 from exceptions import StreamerDoesNotExistException
-from twitch_data import get_auth_token, get_channel_id, USER_AGENT, get_client_id
+from twitch_data import get_channel_id, post_gql_request
 
 
 # For documentation on Twitch GraphQL API see:
@@ -33,11 +32,3 @@ def load_channel_points_context(streamer_login):
         claim_id = available_claim["id"]
         claim_channel_points_bonus(streamer_login, claim_id)
 
-
-def post_gql_request(json_data):
-    r = requests.post("https://gql.twitch.tv/gql",
-                      json=json_data,
-                      headers={"Authorization": "OAuth " + get_auth_token(),
-                               "Client-Id": get_client_id(),
-                               "User-Agent": USER_AGENT})
-    return r.json()

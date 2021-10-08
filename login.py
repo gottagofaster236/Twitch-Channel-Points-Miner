@@ -3,7 +3,8 @@ import os
 import browser_cookie3
 import requests
 from cookies import get_cookies_path, save_cookies_to_file
-from twitch_data import get_client_id
+from exceptions import StreamerDoesNotExistException
+from twitch_data import get_client_id, get_channel_id
 
 
 # Based on https://github.com/derrod/twl.py
@@ -138,12 +139,11 @@ class TwitchLogin:
         if self.token is None:
             return False
 
-        r = self.session.get(f'https://api.twitch.tv/helix/users?login={self.username}')
-        response = r.json()
-        if "data" in response:
+        try:
+            self.user_id = get_channel_id(self.username)
             self.login_check_result = True
-            self.user_id = response["data"][0]["id"]
-
+        except StreamerDoesNotExistException:
+            self.login_check_result = False
         return self.login_check_result
 
     def save_cookies(self):

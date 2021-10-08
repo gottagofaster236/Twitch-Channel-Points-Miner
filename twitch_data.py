@@ -1,8 +1,7 @@
 import time
 import requests
 from cookies import get_cookie_value
-from exceptions import StreamerIsOfflineException, StreamerDoesNotExistException
-
+from exceptions import StreamerIsOfflineException, StreamerDoesNotExistException, WrongCookiesException
 
 TWITCH_CLIENT_ID = "kimne78kx3ncx6brgo4mv6wki5h1ko"
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36"
@@ -74,16 +73,25 @@ login_by_channel_id = {}
 
 def get_channel_id(streamer_login):
     if streamer_login not in channel_id_by_login:
-        r = requests.get(f"https://api.twitch.tv/helix/users?login={streamer_login}",
-                         headers={"Authorization": "Bearer " + get_auth_token(),
-                                  "Client-Id": get_client_id()})
-        data = r.json()["data"]
-        if len(data) >= 1:
-            channel_id = data[0]["id"]
+        # Code from Twitch-Channel-Points-Miner-v2.
+        json_response = post_gql_request({
+            "operationName": "ReportMenuItem",
+            "extensions": {
+                "persistedQuery": {
+                    "version": 1,
+                    "sha256Hash": "8f3628981255345ca5e5453dfd844efffb01d6413a9931498836e6268692a30c",
+                }
+            },
+            "variables": {"channelLogin": streamer_login}
+        })
+        if "data" not in json_response \
+                or "user" not in json_response["data"] \
+                or json_response["data"]["user"] is None:
+            raise StreamerDoesNotExistException
+        else:
+            channel_id = json_response["data"]["user"]["id"]
             channel_id_by_login[streamer_login] = channel_id
             login_by_channel_id[channel_id] = streamer_login
-        else:
-            raise StreamerDoesNotExistException
     return channel_id_by_login[streamer_login]
 
 
@@ -119,3 +127,19 @@ def get_auth_token():
 
 def get_client_id():
     return TWITCH_CLIENT_ID
+
+
+def post_gql_request(json_data):
+    headers = {
+        "Client-Id": get_client_id(),
+        "User-Agent": USER_AGENT
+    }
+    try:
+        headers["Authorization"] = "OAuth " + get_auth_token()
+    except WrongCookiesException:
+        pass
+
+    r = requests.post("https://gql.twitch.tv/gql",
+                      json=json_data,
+                      headers=headers)
+    return r.json()
