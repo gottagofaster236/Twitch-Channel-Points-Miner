@@ -1,7 +1,7 @@
 # Twitch Channel Points Miner
 
 # Note
-### I'm not actively developing this repo. You can use the enhanced fork: https://github.com/Tkd-Alex/Twitch-Channel-Points-Miner-v2
+### This repo is not supported anymore. Please use the enhanced fork: https://github.com/rdavydov/Twitch-Channel-Points-Miner-v2
 
 A simple script that will watch a stream for you and earn the channel points.
 
